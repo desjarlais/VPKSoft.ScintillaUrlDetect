@@ -15,3 +15,5 @@ Initial release. Might have some bugs 🙄...
 
 #### ScreenShot of the TestApp
 ![image](https://user-images.githubusercontent.com/40712699/68073080-749e5a00-fd95-11e9-8982-398230fbe0ca.png)
+
+This library was inspired by question posted to [ScintillaNET repository](https://github.com/jacobslusser/ScintillaNET/issues/470) - thank you for asking 👍
