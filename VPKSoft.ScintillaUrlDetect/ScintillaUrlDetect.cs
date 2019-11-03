@@ -376,6 +376,11 @@ namespace VPKSoft.ScintillaUrlDetect
         // a user clicked an indicator..
         private void Scintilla_IndicatorClick(object sender, IndicatorClickEventArgs e)
         {
+            if (!AllowProcessStartOnUrlClick) // only start processes if allowed..
+            {
+                return;
+            }
+
             if ((e.Modifiers & Keys.Control) == Keys.Control) // validate it was a CTRL+Click..
             {
                 var match = GetUrlAtPosition(e.Position); // get the URL at the mouse position..
@@ -478,6 +483,13 @@ namespace VPKSoft.ScintillaUrlDetect
             RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
 
         /// <summary>
+        /// The fourth URL match Regex.
+        /// </summary>
+        public Regex UrlMatchFourth { get; set; } = new Regex(@"\b(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])",
+            RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
+
+
+        /// <summary>
         /// The first mailto match Regex.
         /// </summary>
         public Regex MailtoMatchFirst { get; set; } =
@@ -499,19 +511,24 @@ namespace VPKSoft.ScintillaUrlDetect
         public int ScintillaUrlIndicatorIndex { get; set; } = 29;
 
         /// <summary>
-        /// Gets or sets the scintilla URL indicator style.
-        /// </summary>
-        public IndicatorStyle ScintillaUrlIndicatorStyle { get; set; } = IndicatorStyle.Plain;
-
-        /// <summary>
         /// Gets or sets the color of the scintilla URL indicator.
         /// </summary>
         public Color ScintillaUrlIndicatorColor { get; set; } = Color.Blue;
 
         /// <summary>
+        /// Gets or sets the scintilla URL indicator style.
+        /// </summary>
+        public IndicatorStyle ScintillaUrlIndicatorStyle { get; set; } = IndicatorStyle.Plain;
+
+        /// <summary>
         /// Gets the scintilla URL indicator.
         /// </summary>
         public Indicator ScintillaUrlIndicator => scintilla.Indicators[ScintillaUrlIndicatorIndex];
+
+        /// <summary>
+        /// Gets or sets the value whether a process is started when an URL is clicked by the user.
+        /// </summary>
+        public static bool AllowProcessStartOnUrlClick { get; set; } = true;
         #endregion
 
         #region ScintillaUrlTextIndicator
@@ -521,14 +538,14 @@ namespace VPKSoft.ScintillaUrlDetect
         public int ScintillaUrlTextIndicatorIndex { get; set; } = 30;
 
         /// <summary>
-        /// Gets or sets the scintilla URL text indicator style.
-        /// </summary>
-        public IndicatorStyle ScintillaUrlTextIndicatorStyle { get; set; } = IndicatorStyle.TextFore;
-
-        /// <summary>
         /// Gets or sets the color of the scintilla URL text indicator.
         /// </summary>
         public Color ScintillaUrlTextIndicatorColor { get; set; } = Color.Blue;
+
+        /// <summary>
+        /// Gets or sets the scintilla URL text indicator style.
+        /// </summary>
+        public IndicatorStyle ScintillaUrlTextIndicatorStyle { get; set; } = IndicatorStyle.TextFore;
 
         /// <summary>
         /// Gets the scintilla URL text indicator.
@@ -650,12 +667,14 @@ namespace VPKSoft.ScintillaUrlDetect
             var urlMatches1 = UrlMatchFirst.Matches(scintilla.Text); // URL match regex NO.1, not numbered by how good these are..
             var urlMatches2 = UrlMatchSecond.Matches(scintilla.Text); // URL match regex NO.2, not numbered by how good these are..
             var urlMatches3 = UrlMatchThird.Matches(scintilla.Text); // URL match regex NO.3, not numbered by how good these are..
+            var urlMatches4 = UrlMatchFourth.Matches(scintilla.Text); // URL match regex NO.3, not numbered by how good these are..
 
             var mailtoMatches1 = MailtoMatchFirst.Matches(scintilla.Text); // mailto: match regex NO.1, not numbered by how good these are..
             var mailtoMatches2 = MailtoMatchSecond.Matches(scintilla.Text); // mailto: match regex NO.2, not numbered by how good these are..
 
             // find matches to all the regex definitions..
-            var matches = UnifyMatches(urlMatches1, urlMatches2, urlMatches3, mailtoMatches1, mailtoMatches2);
+            var matches = UnifyMatches(urlMatches1, urlMatches2, urlMatches3, urlMatches4, mailtoMatches1,
+                mailtoMatches2);
 
             // loop through the matches..
             foreach (var match in matches)
@@ -679,7 +698,7 @@ namespace VPKSoft.ScintillaUrlDetect
                     {
                         StartIndex = match.Key.Index,
                         Contents = scintilla.Text.Substring(match.Key.Index, match.Key.Length),
-                        IsMailToLink = match.Value > 2, // the indices 3 and 4 are mailto: links..
+                        IsMailToLink = match.Value > 3, // the indices 4 and 5 are mailto: links..
                     }
                 );
             }
@@ -787,7 +806,8 @@ namespace VPKSoft.ScintillaUrlDetect
             {
                 foreach (Match match in matchCollections[i])
                 {
-                    if (!result.Exists(f => f.Key.Index == match.Index && f.Key.Length == match.Length))
+                    if (!result.Exists(f => f.Key.Index == match.Index && f.Key.Length == match.Length) &&
+                        !result.Exists(f => f.Key.Index <= match.Index && f.Key.Length + f.Key.Index >= match.Length + match.Index))
                     {
                         result.Add(new KeyValuePair<Match, int>(match, i));
                     }
@@ -796,6 +816,7 @@ namespace VPKSoft.ScintillaUrlDetect
 
             // sort the values by their starting positions..
             result.Sort((x, y) => x.Key.Index.CompareTo(y.Key.Index)); 
+
             return result;
         }
 
