@@ -25,6 +25,7 @@ SOFTWARE.
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 using VPKSoft.ScintillaUrlDetect;
@@ -38,6 +39,9 @@ namespace TestApp
         public FormMain()
         {
             InitializeComponent();
+
+            ScintillaUrlDetect.UseThreadsOnUrlStyling = true;
+
             urlDetect = new ScintillaUrlDetect(scintillaTest);
         }
 
@@ -88,6 +92,32 @@ namespace TestApp
             {
                 urlDetect = null;
             }
+        }
+
+        private void mnuSpeedTest_Click(object sender, EventArgs e)
+        {
+            if (mnuThreadingEnabled.Checked)
+            {
+                mnuThreadingEnabled.Checked = false;
+                ScintillaUrlDetect.UseThreadsOnUrlStyling = false;
+            }
+
+            double totalSeconds = 0;
+
+            for (int i = 0; i < 100; i++)
+            {
+                DateTime dt1 = DateTime.Now;
+                urlDetect.MarkUrls();
+
+                var passed = (DateTime.Now - dt1).TotalSeconds;
+                totalSeconds += passed;
+
+                Debug.WriteLine((i + 1) + " / 100: " + passed);
+            }
+
+            totalSeconds /= 100.0;
+
+            MessageBox.Show(@"Average time passed (seconds, 100 round): " + totalSeconds);
         }
     }
 }

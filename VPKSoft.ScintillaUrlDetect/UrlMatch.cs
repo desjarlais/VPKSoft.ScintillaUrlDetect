@@ -25,6 +25,7 @@ SOFTWARE.
 #endregion
 
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using ScintillaNET;
 
 namespace VPKSoft.ScintillaUrlDetect
@@ -55,14 +56,22 @@ namespace VPKSoft.ScintillaUrlDetect
         public string Contents { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this instance is a mail to link.
+        /// Gets a value indicating whether this instance is a mail to link.
         /// </summary>
-        public bool IsMailToLink { get; set; }
+        public bool IsMailToLink => RegexMailTo.IsMatch(Contents);
 
         /// <summary>
         /// Gets the contents as a human readable string.
         /// </summary>
         public string ContentsHumanReadable => Contents.Trim().Trim('\"', '\'').Replace("mailto:", string.Empty);
+
+        /// <summary>
+        /// A regex for mailto links.
+        /// </summary>
+        public static Regex RegexMailTo { get; set; } =
+            new Regex(
+                @"((?:mailto:)?[A-Z0-9._%+-]+@[A-Z0-9._%-]+\.[A-Z]{2,4})",
+                RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         /// <summary>
         /// Gets the contents tidied so that the Url can be used to start a <see cref="Process"/>.

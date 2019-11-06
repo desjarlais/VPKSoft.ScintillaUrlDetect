@@ -10,7 +10,7 @@
     <iconUrl>https://www.vpksoft.net/site/VPKSoft.ico</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Added a Regex to support Wikipedia-styled URLs. Added property AllowProcessStartOnUrlClick to enable / disable the library to start processes. Small bug fix to the previous release.</releaseNotes>
+    <releaseNotes>Made only the visible area to be updated by default.</releaseNotes>
     <copyright>Copyright © VPKSoft 2019</copyright>
     <tags>wrapper scintilla scintillanet vpksoft url mailto</tags>
     <license type="expression">MIT</license>

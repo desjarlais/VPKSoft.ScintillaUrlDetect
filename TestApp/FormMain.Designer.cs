@@ -36,6 +36,7 @@
             this.mnuThreadingEnabled = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuManualStyling = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuClearStyling = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuSpeedTest = new System.Windows.Forms.ToolStripMenuItem();
             this.odAnyFile = new System.Windows.Forms.OpenFileDialog();
             this.msMain.SuspendLayout();
             this.SuspendLayout();
@@ -66,7 +67,8 @@
             this.mnuOpenFile,
             this.mnuThreadingEnabled,
             this.mnuManualStyling,
-            this.mnuClearStyling});
+            this.mnuClearStyling,
+            this.mnuSpeedTest});
             this.mnuFile.Name = "mnuFile";
             this.mnuFile.Size = new System.Drawing.Size(37, 20);
             this.mnuFile.Text = "File";
@@ -74,31 +76,40 @@
             // mnuOpenFile
             // 
             this.mnuOpenFile.Name = "mnuOpenFile";
-            this.mnuOpenFile.Size = new System.Drawing.Size(172, 22);
+            this.mnuOpenFile.Size = new System.Drawing.Size(197, 22);
             this.mnuOpenFile.Text = "Open";
             this.mnuOpenFile.Click += new System.EventHandler(this.mnuOpenFile_Click);
             // 
             // mnuThreadingEnabled
             // 
+            this.mnuThreadingEnabled.Checked = true;
             this.mnuThreadingEnabled.CheckOnClick = true;
+            this.mnuThreadingEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
             this.mnuThreadingEnabled.Name = "mnuThreadingEnabled";
-            this.mnuThreadingEnabled.Size = new System.Drawing.Size(172, 22);
+            this.mnuThreadingEnabled.Size = new System.Drawing.Size(197, 22);
             this.mnuThreadingEnabled.Text = "Threading enabled";
             this.mnuThreadingEnabled.CheckedChanged += new System.EventHandler(this.mnuThreadingEnabled_CheckedChanged);
             // 
             // mnuManualStyling
             // 
             this.mnuManualStyling.Name = "mnuManualStyling";
-            this.mnuManualStyling.Size = new System.Drawing.Size(172, 22);
+            this.mnuManualStyling.Size = new System.Drawing.Size(197, 22);
             this.mnuManualStyling.Text = "Manual styling";
             this.mnuManualStyling.Click += new System.EventHandler(this.mnuManualStyling_Click);
             // 
             // mnuClearStyling
             // 
             this.mnuClearStyling.Name = "mnuClearStyling";
-            this.mnuClearStyling.Size = new System.Drawing.Size(172, 22);
+            this.mnuClearStyling.Size = new System.Drawing.Size(197, 22);
             this.mnuClearStyling.Text = "Clear styling";
             this.mnuClearStyling.Click += new System.EventHandler(this.mnuClearStyling_Click);
+            // 
+            // mnuSpeedTest
+            // 
+            this.mnuSpeedTest.Name = "mnuSpeedTest";
+            this.mnuSpeedTest.Size = new System.Drawing.Size(197, 22);
+            this.mnuSpeedTest.Text = "Speed test (100 rounds)";
+            this.mnuSpeedTest.Click += new System.EventHandler(this.mnuSpeedTest_Click);
             // 
             // odAnyFile
             // 
@@ -133,6 +144,7 @@
         private System.Windows.Forms.ToolStripMenuItem mnuThreadingEnabled;
         private System.Windows.Forms.ToolStripMenuItem mnuManualStyling;
         private System.Windows.Forms.ToolStripMenuItem mnuClearStyling;
+        private System.Windows.Forms.ToolStripMenuItem mnuSpeedTest;
     }
 }
 

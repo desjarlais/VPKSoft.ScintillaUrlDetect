@@ -66,6 +66,8 @@ namespace VPKSoft.ScintillaUrlDetect
             scintilla.IndicatorClick += Scintilla_IndicatorClick;
             scintilla.DwellStart += Scintilla_DwellStart;
             scintilla.DwellEnd += Scintilla_DwellEnd;
+            scintilla.UpdateUI += Scintilla_UpdateUI;
+            scintilla.SizeChanged += Scintilla_SizeChanged;
 
             // initialize the URL styling indicators..
             InitializeIndicators();
@@ -110,7 +112,7 @@ namespace VPKSoft.ScintillaUrlDetect
 
             ScintillaUrlTextIndicator.ForeColor = ScintillaUrlTextIndicatorColor;
             ScintillaUrlTextIndicator.Style = ScintillaUrlTextIndicatorStyle;
-            NeedsUrlStyling = true;
+            NeedsUrlStylingContent = true;
         }
         #endregion
 
@@ -161,6 +163,18 @@ namespace VPKSoft.ScintillaUrlDetect
         // ReSharper disable once InconsistentNaming
         private static bool useThreadsOnUrlStyling = true;
 
+        // a field to hold the ThreadSuspended property value..
+        private volatile bool threadSuspended;
+
+        /// <summary>
+        /// Gets or sets the value whether the URL checking thread should be suspended.
+        /// </summary>
+        public bool ThreadSuspended
+        {
+            get => threadSuspended;
+            set => threadSuspended = value;
+        }
+
         /// <summary>
         /// Gets or sets a value indicating whether use threads on the URL styling.
         /// If set to false a manual call to <see cref="MarkUrls"/> method is required with self-built logic with the <see cref="Scintilla"/> control.
@@ -174,6 +188,7 @@ namespace VPKSoft.ScintillaUrlDetect
             {
                 if (value && !useThreadsOnUrlStyling) // enable the threads..
                 {
+                    // ReSharper disable once ForCanBeConvertedToForeach
                     for (int i = 0; i < MyInstances.Count; i++)
                     {
                         MyInstances[i].CreateThread();
@@ -182,6 +197,7 @@ namespace VPKSoft.ScintillaUrlDetect
 
                 if (!value && useThreadsOnUrlStyling) // disable the treads..
                 {
+                    // ReSharper disable once ForCanBeConvertedToForeach
                     for (int i = 0; i < MyInstances.Count; i++)
                     {
                         MyInstances[i].CancelThread();
@@ -276,27 +292,35 @@ namespace VPKSoft.ScintillaUrlDetect
         {
             while (!stopUrlStylingThread) // run while you can..
             {
-                // if URL styling is required and the launch time has been passed..
-                if (threadSpentTimeMs > UrlCheckInterval && NeedsUrlStyling) 
+                while (threadSuspended && !stopUrlStylingThread) // the thread can now be suspended..
                 {
-                    if (scintilla.InvokeRequired) // ..re-style the Scintilla control's URLs..
+                    Thread.Sleep(5);
+                }
+
+                // if URL styling is required and the launch time has been passed..
+                if (threadSpentTimeMs > UrlCheckIntervalContentsChange && NeedsUrlStylingContent ||
+                    threadSpentTimeMs > UrlCheckIntervalUiUpdate && NeedUrlStylingUiUpdate && !StyleEntireDocument)
+                {
+                    // ..re-style the Scintilla control's URLs..
+                    if (StyleEntireDocument)
                     {
-                        scintilla.Invoke(new MethodInvoker(MarkUrls));
+                        MarkUrls();
                     }
                     else
                     {
-                        MarkUrls(); // this shouldn't happen..
+                        MarkVisibleUrls(); 
                     }
 
                     threadSpentTimeMs = 0; // zero the time counter..
+                    continue;
                 }
 
-                Thread.Sleep(10); // some sleeping (zzz)..
-                threadSpentTimeMs += 10; // increase the re-style launch counter..
+                Thread.Sleep(5); // some sleeping (zzz)..
+                threadSpentTimeMs += 5; // increase the re-style launch counter..
                 if (threadSpentTimeMs > 1000000) // avoid arithmetic overflow..
                 {
                     // ..just set the re-style launch counter to the defined interval..
-                    threadSpentTimeMs = UrlCheckInterval; 
+                    threadSpentTimeMs = UrlCheckIntervalContentsChange; 
                 }
             }
         }
@@ -331,12 +355,29 @@ namespace VPKSoft.ScintillaUrlDetect
             }
         }
 
-        // the text of the scintilla control changed, so set the NeedsUrlStyling flag to true..
+        // the text of the scintilla control changed, so set the NeedsUrlStylingContent flag to true..
         private void Scintilla_TextChanged(object sender, EventArgs e)
         {
-            NeedsUrlStyling = true;
+            NeedsUrlStylingContent = true;
         }
         
+        // the view area has been changed..
+        private void Scintilla_UpdateUI(object sender, UpdateUIEventArgs e)
+        {
+            // the selection or content change doesn't matter with the URL detection..
+            if (e.Change.HasFlag(UpdateChange.HScroll) |
+                e.Change.HasFlag(UpdateChange.VScroll))
+            {
+                NeedUrlStylingUiUpdate = true;
+            }
+        }
+
+        // the view area has been changed..
+        private void Scintilla_SizeChanged(object sender, EventArgs e)
+        {
+            NeedUrlStylingUiUpdate = true;
+        }
+
         // the mouse is no longer dwelling..
         private void Scintilla_DwellEnd(object sender, DwellEventArgs e)
         {
@@ -389,6 +430,7 @@ namespace VPKSoft.ScintillaUrlDetect
                     try
                     {
                         Process.Start(match.ContentsTidy);
+                        scintilla.Focus(); // without this some weird flickering occurred..
                     }
                     catch (Exception ex)
                     {
@@ -401,20 +443,20 @@ namespace VPKSoft.ScintillaUrlDetect
         #endregion
 
         #region ThreadSafeProperties
-        // a field to hold the NeedsUrlStyling property value..
-        private bool needUrlStyling;
+        // a field to hold the NeedsUrlStylingContent property value..
+        private bool needUrlStylingContent;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the URL styling is required for the <see cref="Scintilla"/> control.
+        /// Gets or sets a value indicating whether the URL styling is required for the <see cref="Scintilla"/> control via contents change.
         /// </summary>
         [DoNotNotify] // this property notifies by it self..
-        private bool NeedsUrlStyling 
+        private bool NeedsUrlStylingContent 
         {
             get
             {
                 lock (waitUrlStylingThreadLock) // lock the property value..
                 {
-                    return needUrlStyling; // return the value..
+                    return needUrlStylingContent; // return the value..
                 }
             }
 
@@ -423,15 +465,76 @@ namespace VPKSoft.ScintillaUrlDetect
                 lock (waitUrlStylingThreadLock) // lock the property value..
                 {
                     // indicate that the property value was changed..
-                    OnPropertyChanged(nameof(NeedsUrlStyling), needUrlStyling, value);
-                    needUrlStyling = value; // set the property value..
+                    OnPropertyChanged(nameof(NeedsUrlStylingContent), needUrlStylingContent, value);
+                    needUrlStylingContent = value; // set the property value..
                 }
                 threadSpentTimeMs = 0; // re-set the URL styling thread's time counter..
             }
         }
 
-        // a field to hold the UrlCheckInterval property value..
-        private int urlCheckInterval = 500;
+        /// <summary>
+        /// Gets or sets the value whether to use to whole document styling with the <see cref="Scintilla"/> control.
+        /// This is very slow on large text documents.
+        /// </summary>
+        public static bool StyleEntireDocument { get; set; }
+
+        // a field to hold the NeedUrlStylingUIUpdate property value..
+        private bool needUrlStylingUiUpdate;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the URL styling is required for the <see cref="Scintilla"/> control via the visible area change.
+        /// </summary>
+        [DoNotNotify] // this property notifies by it self..
+        private bool NeedUrlStylingUiUpdate 
+        {
+            get
+            {
+                lock (waitUrlStylingThreadLock) // lock the property value..
+                {
+                    return needUrlStylingUiUpdate; // return the value..
+                }
+            }
+
+            set
+            {
+                lock (waitUrlStylingThreadLock) // lock the property value..
+                {
+                    // indicate that the property value was changed..
+                    OnPropertyChanged(nameof(needUrlStylingUiUpdate), needUrlStylingUiUpdate, value);
+                    needUrlStylingUiUpdate = value; // set the property value..
+                }
+                threadSpentTimeMs = 0; // re-set the URL styling thread's time counter..
+            }
+        }
+
+        // a field to hold the UrlCheckIntervalContentsChange property value..
+        private int urlCheckIntervalContentsChange = 500;
+
+        /// <summary>
+        /// Gets or sets the URL check interval for the <see cref="Scintilla"/> control when the contents change.
+        /// </summary>
+        [DoNotNotify]
+        public int UrlCheckIntervalContentsChange
+        {
+            get
+            {
+                lock (waitUrlStylingThreadLock) // lock the property value..
+                {
+                    return urlCheckIntervalContentsChange; // return the value..
+                }
+            }
+
+            set
+            {
+                lock (waitUrlStylingThreadLock) // lock the property value..
+                {
+                    // indicate that the property value was changed..
+                    OnPropertyChanged(nameof(UrlCheckIntervalContentsChange), urlCheckIntervalContentsChange, value);
+                    urlCheckIntervalContentsChange = value; // set the property value..
+                }
+                threadSpentTimeMs = 0; // re-set the URL styling thread's time counter..
+            }
+        }
 
         /// <summary>
         /// Gets or sets the URL check interval for the <see cref="Scintilla"/> control.
@@ -439,11 +542,24 @@ namespace VPKSoft.ScintillaUrlDetect
         [DoNotNotify]
         public int UrlCheckInterval
         {
+            get => UrlCheckIntervalContentsChange;
+            set => UrlCheckIntervalContentsChange = value;
+        }
+
+        // a field to hold the UrlCheckIntervalUiUpdate property value..
+        private int urlCheckIntervalUiUpdate = 285;
+
+        /// <summary>
+        /// Gets or sets the URL check interval for the <see cref="Scintilla"/> control.
+        /// </summary>
+        [DoNotNotify]
+        public int UrlCheckIntervalUiUpdate
+        {
             get
             {
                 lock (waitUrlStylingThreadLock) // lock the property value..
                 {
-                    return urlCheckInterval; // return the value..
+                    return urlCheckIntervalUiUpdate; // return the value..
                 }
             }
 
@@ -452,8 +568,8 @@ namespace VPKSoft.ScintillaUrlDetect
                 lock (waitUrlStylingThreadLock) // lock the property value..
                 {
                     // indicate that the property value was changed..
-                    OnPropertyChanged(nameof(UrlCheckInterval), urlCheckInterval, value);
-                    urlCheckInterval = value; // set the property value..
+                    OnPropertyChanged(nameof(UrlCheckIntervalUiUpdate), urlCheckIntervalUiUpdate, value);
+                    urlCheckIntervalUiUpdate = value; // set the property value..
                 }
                 threadSpentTimeMs = 0; // re-set the URL styling thread's time counter..
             }
@@ -461,46 +577,14 @@ namespace VPKSoft.ScintillaUrlDetect
         #endregion
 
         #region (C): http://www.regexguru.com/2008/11/detecting-urls-in-a-block-of-text/
-        // Also very much thanks to: https://regex101.com, donate something to the site in case you have a dollar..
-
         /// <summary>
-        /// The first URL match Regex.
+        /// A regex for URL or mailto links.
         /// </summary>
-        public Regex UrlMatchFirst { get; set; } =
-            new Regex(@"(?:(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[-A-Z0-9+&@#\/%?=~_|$!:,.;]*[-A-Z0-9+&@#\/%=~_|$])",
-                RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
-
-        /// <summary>
-        /// The second URL match Regex.
-        /// </summary>
-        public Regex UrlMatchSecond { get; set; } = new Regex(@"""(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[^""\r\n]+""?",
-            RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
-
-        /// <summary>
-        /// The third URL match Regex.
-        /// </summary>
-        public Regex UrlMatchThird { get; set; } = new Regex(@"'(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[^'\r\n]+'?",
-            RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
-
-        /// <summary>
-        /// The fourth URL match Regex.
-        /// </summary>
-        public Regex UrlMatchFourth { get; set; } = new Regex(@"\b(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])",
-            RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
-
-
-        /// <summary>
-        /// The first mailto match Regex.
-        /// </summary>
-        public Regex MailtoMatchFirst { get; set; } =
-            new Regex(@"'((?:mailto:)?[A-Z0-9._%+-]+@[A-Z0-9._%-]+\.[A-Z]{2,4})'",
-                RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
-
-        /// <summary>
-        /// The second mailto match Regex.
-        /// </summary>
-        public Regex MailtoMatchSecond { get; set; } =
-            new Regex(@"((?:mailto:)?[A-Z0-9._%+-]+@[A-Z0-9._%-]+\.[A-Z]{2,4})\b",
+        public static Regex UrlOrMailTo { get; set; } =
+            
+            new Regex(
+                //@"((?:mailto:)?[A-Z0-9._%+-]+@[A-Z0-9._%-]+\.[A-Z]{2,4})|\b(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])",
+                @"(\b(?:mailto:)?[A-Z0-9._%+-]+@[A-Z0-9._%-]+\.[A-Z]{2,4})|(\b(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$]))",
                 RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
         #endregion
 
@@ -634,7 +718,7 @@ namespace VPKSoft.ScintillaUrlDetect
             if (!StyleClearList.Contains(indicatorIndex)) // if the indicator isn't already on the clear list, add it..
             {
                 StyleClearList.Add(indicatorIndex);
-                NeedsUrlStyling = true;
+                NeedsUrlStylingContent = true;
             }
         }
 
@@ -644,7 +728,7 @@ namespace VPKSoft.ScintillaUrlDetect
         public void ClearAppendIndicators()
         {
             StyleClearList.Clear();
-            NeedsUrlStyling = true;
+            NeedsUrlStylingContent = true;
         }
 
         /// <summary>
@@ -653,54 +737,183 @@ namespace VPKSoft.ScintillaUrlDetect
         private static readonly List<int> StyleClearList = new List<int>();
 
         /// <summary>
-        /// Marks URLs of the <see cref="Scintilla"/> control using compiled regular expression to match the words.
+        /// Gets the <see cref="Scintilla"/> control visible text area start position and its contents as a named tuple.
         /// </summary>
-        public void MarkUrls()
+        private (int startIndex, string areaText) ScintillaVisibleArea
         {
-            NeedsUrlStyling = false;
-            // clear the URL indicators..
-            ClearIndicators();
+            get
+            {
+                var startIndex = scintilla.Lines[scintilla.FirstVisibleLine].Position;
+                var lastLineIndex = scintilla.FirstVisibleLine + scintilla.LinesOnScreen;
+                var endPosition = scintilla.Lines[lastLineIndex].Position +
+                                  scintilla.Lines[lastLineIndex].Length;
+                var areaText = scintilla.Text.Substring(startIndex, endPosition - startIndex);
 
-            // clear the list of URL matches..
-            UrlMatches.Clear();
+                return (startIndex, areaText);
+            }
+        }
 
-            var urlMatches1 = UrlMatchFirst.Matches(scintilla.Text); // URL match regex NO.1, not numbered by how good these are..
-            var urlMatches2 = UrlMatchSecond.Matches(scintilla.Text); // URL match regex NO.2, not numbered by how good these are..
-            var urlMatches3 = UrlMatchThird.Matches(scintilla.Text); // URL match regex NO.3, not numbered by how good these are..
-            var urlMatches4 = UrlMatchFourth.Matches(scintilla.Text); // URL match regex NO.3, not numbered by how good these are..
+        /// <summary>
+        /// Gets the <see cref="Scintilla"/> control text.
+        /// </summary>
+        private string ScintillaArea => scintilla.Text;
 
-            var mailtoMatches1 = MailtoMatchFirst.Matches(scintilla.Text); // mailto: match regex NO.1, not numbered by how good these are..
-            var mailtoMatches2 = MailtoMatchSecond.Matches(scintilla.Text); // mailto: match regex NO.2, not numbered by how good these are..
-
-            // find matches to all the regex definitions..
-            var matches = UnifyMatches(urlMatches1, urlMatches2, urlMatches3, urlMatches4, mailtoMatches1,
-                mailtoMatches2);
-
+        /// <summary>
+        /// Marks the <see cref="Scintilla"/> control visible area with a given <see cref="MatchCollection"/> from a given <paramref name="startPosition"/>,
+        /// </summary>
+        /// <param name="matches">A <see cref="MatchCollection"/> containing the regexp matches for the URLs to be indicated.</param>
+        /// <param name="startPosition">The starting position index to within the while <see cref="Scintilla"/> control to mark the URLs.</param>
+        private void MarkScintillaVisibleArea(MatchCollection matches, int startPosition)
+        {
             // loop through the matches..
-            foreach (var match in matches)
+            foreach (Match match in matches)
             {
                 // if there are indicators list to be cleared under the URL indicators..
                 foreach (var indicatorIndex in StyleClearList)
                 {
                     // ..clear the indicators..
                     scintilla.IndicatorCurrent = indicatorIndex;
-                    scintilla.IndicatorClearRange(match.Key.Index, match.Key.Length);
+                    scintilla.IndicatorClearRange(match.Index + startPosition, match.Length);
                 }
 
                 scintilla.IndicatorCurrent = ScintillaUrlIndicatorIndex;
                 // ..mark it with an indicator..
-                scintilla.IndicatorFillRange(match.Key.Index, match.Key.Length);
+                scintilla.IndicatorFillRange(match.Index + startPosition, match.Length);
                 scintilla.IndicatorCurrent = ScintillaUrlTextIndicatorIndex;
                 // ..mark it with an indicator..
-                scintilla.IndicatorFillRange(match.Key.Index, match.Key.Length);
+                scintilla.IndicatorFillRange(match.Index + startPosition, match.Length);
 
                 UrlMatches.Add(new UrlMatch // save the matches for process start on click..
                     {
-                        StartIndex = match.Key.Index,
-                        Contents = scintilla.Text.Substring(match.Key.Index, match.Key.Length),
-                        IsMailToLink = match.Value > 3, // the indices 4 and 5 are mailto: links..
+                        StartIndex = match.Index + startPosition,
+                        Contents = scintilla.Text.Substring(match.Index + startPosition, match.Length),
                     }
                 );
+            }
+        }
+
+        /// <summary>
+        /// Marks the <see cref="Scintilla"/> control text with a given <see cref="MatchCollection"/>.
+        /// </summary>
+        /// <param name="matches">A <see cref="MatchCollection"/> containing the regexp matches for the URLs to be indicated.</param>
+        private void MarkScintillaArea(MatchCollection matches)
+        {
+            // loop through the matches..
+            foreach (Match match in matches)
+            {
+                // if there are indicators list to be cleared under the URL indicators..
+                foreach (var indicatorIndex in StyleClearList)
+                {
+                    // ..clear the indicators..
+                    scintilla.IndicatorCurrent = indicatorIndex;
+                    scintilla.IndicatorClearRange(match.Index, match.Length);
+                }
+
+                scintilla.IndicatorCurrent = ScintillaUrlIndicatorIndex;
+                // ..mark it with an indicator..
+                scintilla.IndicatorFillRange(match.Index, match.Length);
+                scintilla.IndicatorCurrent = ScintillaUrlTextIndicatorIndex;
+                // ..mark it with an indicator..
+                scintilla.IndicatorFillRange(match.Index, match.Length);
+
+                UrlMatches.Add(new UrlMatch // save the matches for process start on click..
+                    {
+                        StartIndex = match.Index,
+                        Contents = scintilla.Text.Substring(match.Index, match.Length),
+                    }
+                );
+            }
+        }
+
+        /// <summary>
+        /// Marks URLs of the <see cref="Scintilla"/> control within the visible area using compiled regular expression to match the words.
+        /// </summary>
+        public void MarkVisibleUrls()
+        {
+            // re-set the styling required flags..
+            NeedsUrlStylingContent = false;
+            NeedUrlStylingUiUpdate = false;
+
+            // clear the list of URL matches..
+            UrlMatches.Clear();
+
+            (int startIndex, string areaText) visibleArea = (0, string.Empty);
+
+            if (scintilla.InvokeRequired)
+            {
+                scintilla.Invoke(new MethodInvoker(() => { visibleArea = ScintillaVisibleArea; }));
+            }
+            else
+            {
+                visibleArea = ScintillaVisibleArea;
+            }
+
+            var startPosition = visibleArea.startIndex;
+
+            var area = visibleArea.areaText;
+
+            // get the regexp matches..
+            var matches = UrlOrMailTo.Matches(area);
+
+            // mark the visible area..
+            if (scintilla.InvokeRequired)
+            {
+                // clear the previous URL indicators..
+                scintilla.Invoke(new MethodInvoker(ClearIndicators));
+                scintilla.Invoke(new MethodInvoker(() => { MarkScintillaVisibleArea(matches, startPosition); }));
+            }
+            else
+            {
+                // clear the previous URL indicators..
+                ClearIndicators();
+                MarkScintillaVisibleArea(matches, startPosition);
+            }
+        }
+
+        /// <summary>
+        /// Marks URLs of the <see cref="Scintilla"/> control using compiled regular expression to match the words.
+        /// </summary>
+        public void MarkUrls()
+        {
+            // re-set the styling required flags..
+            NeedsUrlStylingContent = false;
+            NeedUrlStylingUiUpdate = false;
+
+            // clear the URL indicators..
+            if (scintilla.InvokeRequired)
+            {
+                scintilla.Invoke(new MethodInvoker(ClearIndicators));
+            }
+            else
+            {
+                ClearIndicators();
+            }
+
+            // clear the list of URL matches..
+            UrlMatches.Clear();
+
+            string text = string.Empty;
+
+            if (scintilla.InvokeRequired)
+            {
+                scintilla.Invoke(new MethodInvoker(() => { text = ScintillaArea; }));
+            }
+            else
+            {
+                text = ScintillaArea;
+            }
+
+            // get the regexp matches..
+            var matches = UrlOrMailTo.Matches(text);
+
+            // mark the whole Scintilla text area..
+            if (scintilla.InvokeRequired)
+            {
+                scintilla.Invoke(new MethodInvoker(() => { MarkScintillaArea(matches); }));
+            }
+            else
+            {
+                MarkScintillaArea(matches);
             }
         }
 
@@ -768,7 +981,7 @@ namespace VPKSoft.ScintillaUrlDetect
             }
 
             // re-set the URL styling timer for the thread..
-            if (nameof(NeedsUrlStyling) == propertyName)
+            if (nameof(NeedsUrlStylingContent) == propertyName)
             {
                 threadSpentTimeMs = 0;
             }
@@ -831,6 +1044,8 @@ namespace VPKSoft.ScintillaUrlDetect
             scintilla.IndicatorClick -= Scintilla_IndicatorClick;
             scintilla.DwellStart -= Scintilla_DwellStart;
             scintilla.DwellEnd -= Scintilla_DwellEnd;
+            scintilla.UpdateUI -= Scintilla_UpdateUI;
+            scintilla.SizeChanged -= Scintilla_SizeChanged;
 
             // stop the thread..
             CancelThread();
