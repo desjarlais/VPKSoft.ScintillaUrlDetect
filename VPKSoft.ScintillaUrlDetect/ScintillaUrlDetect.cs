@@ -333,7 +333,7 @@ namespace VPKSoft.ScintillaUrlDetect
             var point = e.Location;
 
             // get the character index at the click location..
-            int charPosition = scintilla.CharPositionFromPoint(point.X, point.Y);
+            int charPosition = scintilla.CharPositionFromPointClose(point.X, point.Y);
 
             // validate the character index and the indicator style at the location..
             if (charPosition != -1 && (scintilla.IndicatorOnFor(ScintillaUrlIndicatorIndex, charPosition) ||
@@ -590,6 +590,12 @@ namespace VPKSoft.ScintillaUrlDetect
 
         #region ScintillaUrl
         /// <summary>
+        /// Gets or set the maximum URL length to use auto-ellipsis with it's display value.
+        /// </summary>
+        public static int AutoEllipsisUrlLength { get; set; } = -1;
+
+
+        /// <summary>
         /// Gets or sets the index of the scintilla URL indicator.
         /// </summary>
         public int ScintillaUrlIndicatorIndex { get; set; } = 29;
@@ -787,6 +793,7 @@ namespace VPKSoft.ScintillaUrlDetect
                     {
                         StartIndex = match.Index + startPosition,
                         Contents = scintilla.Text.Substring(match.Index + startPosition, match.Length),
+                        AutoEllipsisUrlLength = AutoEllipsisUrlLength,
                     }
                 );
             }
@@ -820,6 +827,7 @@ namespace VPKSoft.ScintillaUrlDetect
                     {
                         StartIndex = match.Index,
                         Contents = scintilla.Text.Substring(match.Index, match.Length),
+                        AutoEllipsisUrlLength = AutoEllipsisUrlLength,
                     }
                 );
             }

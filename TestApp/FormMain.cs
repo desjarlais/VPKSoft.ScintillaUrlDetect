@@ -41,6 +41,7 @@ namespace TestApp
             InitializeComponent();
 
             ScintillaUrlDetect.UseThreadsOnUrlStyling = true;
+            ScintillaUrlDetect.AutoEllipsisUrlLength = 50;
 
             urlDetect = new ScintillaUrlDetect(scintillaTest);
         }

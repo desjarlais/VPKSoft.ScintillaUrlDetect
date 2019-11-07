@@ -63,7 +63,36 @@ namespace VPKSoft.ScintillaUrlDetect
         /// <summary>
         /// Gets the contents as a human readable string.
         /// </summary>
-        public string ContentsHumanReadable => Contents.Trim().Trim('\"', '\'').Replace("mailto:", string.Empty);
+        public string ContentsHumanReadable
+        {
+            get
+            {
+                var result = Contents.Trim().Trim('\"', '\'').Replace("mailto:", string.Empty);
+                try
+                {
+                    if (AutoEllipsisUrlLength != -1 && result.Length >= AutoEllipsisUrlLength + 3)
+                    {
+                        var partLength = (AutoEllipsisUrlLength - 3) / 2;
+                        var part1 = result.Substring(0, partLength);
+                        var part2 = result.Substring(result.Length - partLength);
+                        result = string.Concat(part1,
+                            @"...",
+                            part2);
+                    }
+                }
+                catch
+                {
+                    // the auto-ellipsis failed..
+                }
+
+                return result;
+            }
+        } 
+
+        /// <summary>
+        /// Gets or sets the URL maximum length to use auto-ellipsis on it.
+        /// </summary>
+        public int AutoEllipsisUrlLength { get; set; } = -1;
 
         /// <summary>
         /// A regex for mailto links.
