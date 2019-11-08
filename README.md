@@ -13,6 +13,7 @@ Initial release. Might have some bugs 🙄...
 * [ScintillaNET](https://github.com/jacobslusser/ScintillaNET)
 * [PropertyChanged.Fody](https://github.com/Fody/PropertyChanged)
 * [@Sigmanor](https://github.com/Sigmanor) for suggesting to only update the visible area of the [ScintillaNET](https://github.com/jacobslusser/ScintillaNET) control and other precise observations.
+* [RegEx101](https://regex101.com)
 
 #### ScreenShot of the TestApp
 ![image](https://user-images.githubusercontent.com/40712699/68073080-749e5a00-fd95-11e9-8982-398230fbe0ca.png)
