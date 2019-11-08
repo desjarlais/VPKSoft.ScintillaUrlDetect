@@ -424,6 +424,13 @@ namespace VPKSoft.ScintillaUrlDetect
 
             if ((e.Modifiers & Keys.Control) == Keys.Control) // validate it was a CTRL+Click..
             {
+                // https://github.com/VPKSoft/VPKSoft.ScintillaUrlDetect/issues/3#issuecomment-551234408
+                var point = scintilla.PointToClient(Cursor.Position);
+                if (scintilla.CharPositionFromPointClose(point.X, point.Y) == -1)
+                {
+                    return;
+                }
+
                 var match = GetUrlAtPosition(e.Position); // get the URL at the mouse position..
                 if (match != null) // start a process if a link exists at the mouse position..
                 {

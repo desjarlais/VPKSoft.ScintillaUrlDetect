@@ -10,7 +10,7 @@
     <iconUrl>https://www.vpksoft.net/site/VPKSoft.ico</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Fixed the URL being detected out of range of the actual text beneath it. Added auto-ellipsis (experimental).</releaseNotes>
+    <releaseNotes>Fixed the CTRL+Mouse click on an empty area causing a hyperlink to open.</releaseNotes>
     <copyright>Copyright © VPKSoft 2019</copyright>
     <tags>wrapper scintilla scintillanet vpksoft url mailto</tags>
     <license type="expression">MIT</license>
