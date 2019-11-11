@@ -322,6 +322,20 @@ namespace VPKSoft.ScintillaUrlDetect
                     // ..just set the re-style launch counter to the defined interval..
                     threadSpentTimeMs = UrlCheckIntervalContentsChange; 
                 }
+
+                if (!string.IsNullOrEmpty(queuedProcess))
+                {
+                    try
+                    {
+                        Process.Start(queuedProcess);
+                        queuedProcess = null;
+                    }
+                    catch (Exception ex)
+                    {
+                        // report the exception..
+                        ExceptionLogAction?.Invoke(ex);
+                    }
+                }
             }
         }
         #endregion
@@ -414,6 +428,9 @@ namespace VPKSoft.ScintillaUrlDetect
             }
         }
 
+        // a field to hold the URL or mailto link to start the process from the thread..
+        private volatile string queuedProcess;
+
         // a user clicked an indicator..
         private void Scintilla_IndicatorClick(object sender, IndicatorClickEventArgs e)
         {
@@ -434,16 +451,7 @@ namespace VPKSoft.ScintillaUrlDetect
                 var match = GetUrlAtPosition(e.Position); // get the URL at the mouse position..
                 if (match != null) // start a process if a link exists at the mouse position..
                 {
-                    try
-                    {
-                        Process.Start(match.ContentsTidy);
-                        scintilla.Focus(); // without this some weird flickering occurred..
-                    }
-                    catch (Exception ex)
-                    {
-                        // report the exception..
-                        ExceptionLogAction?.Invoke(ex);
-                    }
+                    queuedProcess = match.ContentsTidy;
                 }
             }
         }

@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <package>
   <metadata>
     <id>$id$</id>
@@ -7,12 +7,15 @@
     <authors>$author$</authors>
     <owners>$author$</owners>
     <projectUrl>https://github.com/VPKSoft/VPKSoft.ScintillaUrlDetect</projectUrl>
-    <iconUrl>https://www.vpksoft.net/site/VPKSoft.ico</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Fixed the CTRL+Mouse click on an empty area causing a hyperlink to open.</releaseNotes>
+    <releaseNotes>Fixed the weird mouse behaviour when using CTRL+click to open al link.</releaseNotes>
     <copyright>Copyright © VPKSoft 2019</copyright>
     <tags>wrapper scintilla scintillanet vpksoft url mailto</tags>
     <license type="expression">MIT</license>
+    <icon>vpksoft_logo.png</icon>
   </metadata>
+  <files>
+    <file src="Images\vpksoft_logo.png" target="" />
+  </files>
 </package>
