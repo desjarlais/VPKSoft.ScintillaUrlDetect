@@ -10,7 +10,7 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>Fixed the weird mouse behaviour when using CTRL+click to open al link.</releaseNotes>
-    <copyright>Copyright © VPKSoft 2019</copyright>
+    <copyright>Copyright © VPKSoft 2020</copyright>
     <tags>wrapper scintilla scintillanet vpksoft url mailto</tags>
     <license type="expression">MIT</license>
     <icon>vpksoft_logo.png</icon>
