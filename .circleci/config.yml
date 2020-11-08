@@ -15,10 +15,10 @@
     
      steps:
        - checkout
-       - run: msbuild VPKSoft.ScintillaUrlDetect/LangLib.csproj /t:restore
-       - run: msbuild VPKSoft.ScintillaUrlDetect/LangLib.csproj /p:Configuration=Release
-       - run: msbuild VPKSoft.ScintillaUrlDetect.SUO/LangLib.csproj /t:restore
-       - run: msbuild VPKSoft.ScintillaUrlDetect.SUO/LangLib.csproj /p:Configuration=Release
+       - run: msbuild VPKSoft.ScintillaUrlDetect/VPKSoft.ScintillaUrlDetect.csproj /t:restore
+       - run: msbuild VPKSoft.ScintillaUrlDetect/VPKSoft.ScintillaUrlDetect.csproj /p:Configuration=Release
+       - run: msbuild VPKSoft.ScintillaUrlDetect.SUO/VPKSoft.ScintillaUrlDetect.SUO.csproj /t:restore
+       - run: msbuild VPKSoft.ScintillaUrlDetect.SUO/VPKSoft.ScintillaUrlDetect.SUO.csproj /p:Configuration=Release
 # No need for bleeding edge       - run: dotnet tool install --global PowerShell
        - run: 
           name: Push to NuGet
