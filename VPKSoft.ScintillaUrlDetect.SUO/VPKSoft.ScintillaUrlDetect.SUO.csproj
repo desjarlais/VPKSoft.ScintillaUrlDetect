@@ -16,6 +16,7 @@
     <PackageReleaseNotes>See: https://github.com/VPKSoft/VPKSoft.ScintillaUrlDetect</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageIcon>vpksoft_logo.png</PackageIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -38,6 +39,10 @@
       <Link>FodyWeavers.xsd</Link>
       <SubType>Designer</SubType>
     </None>
+    <None Include="..\VPKSoft.ScintillaUrlDetect\Images\vpksoft_logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\VPKSoft.ScintillaUrlDetect\Images\vpksoft_logo.png">
@@ -45,13 +50,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Fody" Version="6.3.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="PropertyChanged.Fody" Version="3.3.1">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="PropertyChanged.Fody" Version="3.3.1" />
     <PackageReference Include="unofficial.ScintillaNET" Version="3.6.51" />
   </ItemGroup>
 </Project>
