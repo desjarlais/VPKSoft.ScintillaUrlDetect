@@ -45,7 +45,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="PropertyChanged.Fody" Version="3.3.1" />
+    <PackageReference Include="PropertyChanged.Fody" Version="3.3.1">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="unofficial.ScintillaNET" Version="3.6.51" />
   </ItemGroup>
 </Project>
