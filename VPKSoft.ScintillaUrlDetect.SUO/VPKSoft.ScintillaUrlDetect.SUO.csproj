@@ -39,15 +39,10 @@
       <Link>FodyWeavers.xsd</Link>
       <SubType>Designer</SubType>
     </None>
-    <None Include="..\VPKSoft.ScintillaUrlDetect\Images\vpksoft_logo.png">
+    <None Include="..\vpksoft_logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\VPKSoft.ScintillaUrlDetect\Images\vpksoft_logo.png">
-      <Link>Images\vpksoft_logo.png</Link>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="PropertyChanged.Fody" Version="3.3.1" />
