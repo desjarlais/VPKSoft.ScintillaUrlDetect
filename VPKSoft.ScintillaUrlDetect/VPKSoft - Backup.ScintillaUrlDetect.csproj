@@ -13,14 +13,13 @@
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <Authors>VPKSoft</Authors>
     <PackageProjectUrl>https://github.com/VPKSoft/VPKSoft.ScintillaUrlDetect</PackageProjectUrl>
-    <PackageReleaseNotes>See: https://github.com/VPKSoft/VPKSoft.ScintillaUrlDetect</PackageReleaseNotes>
+    <PackageReleaseNotes>NuGet dependency update.</PackageReleaseNotes>
     <PackageTags>wrapper scintilla scintillanet vpksoft url mailto</PackageTags>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/VPKSoft/VPKSoft.ScintillaUrlDetect</RepositoryUrl>
     <PackageIcon>vpksoft_logo.png</PackageIcon>
     <RepositoryType>git</RepositoryType>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -29,6 +28,9 @@
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Fody" Version="6.3.0">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="jacobslusser.ScintillaNET" Version="3.6.3" />
     <PackageReference Include="PropertyChanged.Fody" Version="3.3.1" />
   </ItemGroup>
@@ -44,7 +46,7 @@
   <ItemGroup>
     <None Include="..\..\ScintillaTabbedTextControl\vpksoft_logo.png">
       <Pack>True</Pack>
-      <PackagePath></PackagePath>
+      <PackagePath />
     </None>
   </ItemGroup>
 </Project>
