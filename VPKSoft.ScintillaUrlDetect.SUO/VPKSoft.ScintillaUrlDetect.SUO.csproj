@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net47</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1;net47</TargetFrameworks>
     <AssemblyTitle>VPKSoft.ScintillaUrlDetect.SUO</AssemblyTitle>
     <Product>VPKSoft.ScintillaUrlDetect.SUO</Product>
     <Copyright>Copyright © VPKSoft 2020</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Authors>VPKSoft</Authors>
     <Description>A library to detect URLs with the ScintillaNET control.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -17,14 +17,16 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageIcon>vpksoft_logo.png</PackageIcon>
+    <UseWindowsForms>true</UseWindowsForms>  
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugType>full</DebugType>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net47|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net47' ">
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
@@ -46,6 +48,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="PropertyChanged.Fody" Version="3.3.1" />
-    <PackageReference Include="unofficial.ScintillaNET" Version="3.6.51" />
+    <PackageReference Include="unofficial.ScintillaNET" Version="3.6.60" />
   </ItemGroup>
 </Project>
