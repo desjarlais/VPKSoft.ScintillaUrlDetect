@@ -5,7 +5,7 @@
     <Product>VPKSoft.ScintillaUrlDetect.SUO</Product>
     <Copyright>Copyright © VPKSoft 2020</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <Authors>VPKSoft</Authors>
     <Description>A library to detect URLs with the ScintillaNET control.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -48,6 +48,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="PropertyChanged.Fody" Version="3.3.1" />
-    <PackageReference Include="unofficial.ScintillaNET" Version="3.6.60" />
+    <PackageReference Include="unofficial.ScintillaNET" Version="3.7.0" />
   </ItemGroup>
 </Project>
