@@ -5,7 +5,7 @@
     <Product>VPKSoft.ScintillaUrlDetect.SUO</Product>
     <Copyright>Copyright © VPKSoft 2020</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
     <Authors>VPKSoft</Authors>
     <Description>A library to detect URLs with the ScintillaNET control.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -17,7 +17,8 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageIcon>vpksoft_logo.png</PackageIcon>
-    <UseWindowsForms>true</UseWindowsForms>  
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyVersion>1.0.4.0</AssemblyVersion>  
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
