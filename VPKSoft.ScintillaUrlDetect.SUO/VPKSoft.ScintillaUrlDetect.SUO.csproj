@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net47</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net47;net5.0-windows</TargetFrameworks>
     <AssemblyTitle>VPKSoft.ScintillaUrlDetect.SUO</AssemblyTitle>
     <Product>VPKSoft.ScintillaUrlDetect.SUO</Product>
     <Copyright>Copyright © VPKSoft 2020</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
-    <Version>1.0.4</Version>
+    <Version>1.0.5</Version>
     <Authors>VPKSoft</Authors>
     <Description>A library to detect URLs with the ScintillaNET control.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -18,7 +18,8 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageIcon>vpksoft_logo.png</PackageIcon>
     <UseWindowsForms>true</UseWindowsForms>
-    <AssemblyVersion>1.0.4.0</AssemblyVersion>  
+    <AssemblyVersion>1.0.5.0</AssemblyVersion>  
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
