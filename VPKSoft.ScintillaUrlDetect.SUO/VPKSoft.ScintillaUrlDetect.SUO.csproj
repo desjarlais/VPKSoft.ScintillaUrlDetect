@@ -50,6 +50,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="PropertyChanged.Fody" Version="3.3.1" />
-    <PackageReference Include="unofficial.ScintillaNET" Version="3.8.1" />
+    <PackageReference Include="unofficial.ScintillaNET" Version="3.8.2" />
   </ItemGroup>
 </Project>
