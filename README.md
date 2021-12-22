@@ -1,14 +1,14 @@
 # VPKSoft.ScintillaUrlDetect
 A library to detect URLs with the ScintillaNET control.
 
-[![Nuget](https://img.shields.io/nuget/v/VPKSoft.ScintillaUrlDetect)](https://www.nuget.org/packages/VPKSoft.ScintillaUrlDetect/)
+[![Nuget](https://img.shields.io/nuget/v/VPKSoft.ScintillaUrlDetect.NET)](https://www.nuget.org/packages/VPKSoft.ScintillaUrlDetect.NET/)
 
-## The SUO package
-The SUO stands for [unofficial.ScintillaNET](https://www.nuget.org/packages/unofficial.ScintillaNET/) dependency which is updated with the recent pull requests build from this [ScintillaNET fork](https://github.com/VPKSoft/ScintillaNET) from the original [ScintillaNET](https://github.com/jacobslusser/ScintillaNET). The fork was made to try to keep up with the changes to the code base suggested by users as the official version is getting outdated for unknown reason(s) 🙄.
+## The .NET package
+The package ending with .NET is depended upon the new Scintilla 5 series [Scintilla.NET](https://www.nuget.org/packages/Scintilla.NET/) and is in active development. The other package's Scintilla dependency is no longer being maintained even though the codebase of the dependent software may be maintained.
 
 ## Thanks to
 * [JetBrains](https://www.jetbrains.com/?from=VPKSoft.ScintillaUrlDetect) for their open source license(s).
-* [![VPKSoft](https://circleci.com/gh/VPKSoft/VPKSoft.ScintillaUrlDetect.svg?style=shield)](https://app.circleci.com/pipelines/github/VPKSoft/VPKSoft.ScintillaUrlDetect) 
+* [![.NET Desktop](https://github.com/VPKSoft/VPKSoft.ScintillaUrlDetect/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/VPKSoft/VPKSoft.ScintillaUrlDetect/actions/workflows/dotnet-desktop.yml)
 * [regexguru.com](http://www.regexguru.com/2008/11/detecting-urls-in-a-block-of-text/)
 * [ScintillaNET](https://github.com/jacobslusser/ScintillaNET)
 * [PropertyChanged.Fody](https://github.com/Fody/PropertyChanged)
