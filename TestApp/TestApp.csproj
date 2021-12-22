@@ -63,7 +63,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\VPKSoft.ScintillaUrlDetect\VPKSoft.ScintillaUrlDetect.csproj" />
+    <ProjectReference Include="..\VPKSoft.ScintillaUrlDetect.NET\VPKSoft.ScintillaUrlDetect.NET.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="VPKSoft.ico" />
