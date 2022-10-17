@@ -30,6 +30,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
@@ -308,7 +309,7 @@ namespace VPKSoft.ScintillaUrlDetect
                     }
                     else
                     {
-                        MarkVisibleUrls(); 
+                        MarkVisibleUrls();
                     }
 
                     threadSpentTimeMs = 0; // zero the time counter..
@@ -316,18 +317,26 @@ namespace VPKSoft.ScintillaUrlDetect
                 }
 
                 Thread.Sleep(5); // some sleeping (zzz)..
-                threadSpentTimeMs += 5; // increase the re-style launch counter..
+                threadSpentTimeMs = threadSpentTimeMs + 5; // increase the re-style launch counter..
                 if (threadSpentTimeMs > 1000000) // avoid arithmetic overflow..
                 {
                     // ..just set the re-style launch counter to the defined interval..
-                    threadSpentTimeMs = UrlCheckIntervalContentsChange; 
+                    threadSpentTimeMs = UrlCheckIntervalContentsChange;
                 }
 
                 if (!string.IsNullOrEmpty(queuedProcess))
                 {
                     try
                     {
-                        Process.Start(queuedProcess);
+                        if (RuntimeInformation.FrameworkDescription.StartsWith(".NET Framework"))
+                        {
+                            Process.Start(queuedProcess);
+                        }
+                        else
+                        {
+                            Process.Start("explorer.exe", queuedProcess);
+                        }
+
                         queuedProcess = null;
                     }
                     catch (Exception ex)
@@ -374,7 +383,7 @@ namespace VPKSoft.ScintillaUrlDetect
         {
             NeedsUrlStylingContent = true;
         }
-        
+
         // the view area has been changed..
         private void Scintilla_UpdateUI(object sender, UpdateUIEventArgs e)
         {
@@ -465,7 +474,7 @@ namespace VPKSoft.ScintillaUrlDetect
         /// Gets or sets a value indicating whether the URL styling is required for the <see cref="Scintilla"/> control via contents change.
         /// </summary>
         [DoNotNotify] // this property notifies by it self..
-        private bool NeedsUrlStylingContent 
+        private bool NeedsUrlStylingContent
         {
             get
             {
@@ -500,7 +509,7 @@ namespace VPKSoft.ScintillaUrlDetect
         /// Gets or sets a value indicating whether the URL styling is required for the <see cref="Scintilla"/> control via the visible area change.
         /// </summary>
         [DoNotNotify] // this property notifies by it self..
-        private bool NeedUrlStylingUiUpdate 
+        private bool NeedUrlStylingUiUpdate
         {
             get
             {
@@ -596,7 +605,7 @@ namespace VPKSoft.ScintillaUrlDetect
         /// A regex for URL or mailto links.
         /// </summary>
         public static Regex UrlOrMailTo { get; set; } =
-            
+
             new Regex(
                 //@"((?:mailto:)?[A-Z0-9._%+-]+@[A-Z0-9._%-]+\.[A-Z]{2,4})|\b(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])",
                 @"(\b(?:mailto:)?[A-Z0-9._%+-]+@[A-Z0-9._%-]+\.[A-Z]{2,4})|(\b(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$]))",
@@ -805,11 +814,11 @@ namespace VPKSoft.ScintillaUrlDetect
                 scintilla.IndicatorFillRange(match.Index + startPosition, match.Length);
 
                 UrlMatches.Add(new UrlMatch // save the matches for process start on click..
-                    {
-                        StartIndex = match.Index + startPosition,
-                        Contents = scintilla.Text.Substring(match.Index + startPosition, match.Length),
-                        AutoEllipsisUrlLength = AutoEllipsisUrlLength,
-                    }
+                {
+                    StartIndex = match.Index + startPosition,
+                    Contents = scintilla.Text.Substring(match.Index + startPosition, match.Length),
+                    AutoEllipsisUrlLength = AutoEllipsisUrlLength,
+                }
                 );
             }
         }
@@ -839,11 +848,11 @@ namespace VPKSoft.ScintillaUrlDetect
                 scintilla.IndicatorFillRange(match.Index, match.Length);
 
                 UrlMatches.Add(new UrlMatch // save the matches for process start on click..
-                    {
-                        StartIndex = match.Index,
-                        Contents = scintilla.Text.Substring(match.Index, match.Length),
-                        AutoEllipsisUrlLength = AutoEllipsisUrlLength,
-                    }
+                {
+                    StartIndex = match.Index,
+                    Contents = scintilla.Text.Substring(match.Index, match.Length),
+                    AutoEllipsisUrlLength = AutoEllipsisUrlLength,
+                }
                 );
             }
         }
@@ -966,7 +975,7 @@ namespace VPKSoft.ScintillaUrlDetect
             if (nameof(ScintillaUrlIndicatorIndex) == propertyName ||
                 nameof(ScintillaUrlTextIndicatorIndex) == propertyName)
             {
-                scintilla.IndicatorCurrent = (int) before;
+                scintilla.IndicatorCurrent = (int)before;
                 // clear the previous spell check markings..
                 scintilla.IndicatorClearRange(0, scintilla.TextLength);
 
@@ -975,7 +984,7 @@ namespace VPKSoft.ScintillaUrlDetect
 
             bool reStyle = false; // a flag indicating whether URL re-styling is required..
 
-            if (nameof(ScintillaUrlIndicatorStyle) == propertyName) 
+            if (nameof(ScintillaUrlIndicatorStyle) == propertyName)
             {
                 // the URL indicator style changed..
                 ScintillaUrlIndicator.Style = ScintillaUrlIndicatorStyle;
@@ -1010,7 +1019,7 @@ namespace VPKSoft.ScintillaUrlDetect
             }
 
             // all these property changes requires the dwell tool tip to be re-configured..
-            if (nameof(UseDwellToolTip) == propertyName || 
+            if (nameof(UseDwellToolTip) == propertyName ||
                 nameof(DwellToolTipBackgroundColor) == propertyName ||
                 nameof(DwellToolTipFontSize) == propertyName ||
                 nameof(DwellToolTipForegroundColor) == propertyName)
@@ -1051,7 +1060,7 @@ namespace VPKSoft.ScintillaUrlDetect
             }
 
             // sort the values by their starting positions..
-            result.Sort((x, y) => x.Key.Index.CompareTo(y.Key.Index)); 
+            result.Sort((x, y) => x.Key.Index.CompareTo(y.Key.Index));
 
             return result;
         }
