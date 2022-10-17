@@ -49,6 +49,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="PropertyChanged.Fody" Version="4.0.4" />
-    <PackageReference Include="Scintilla.NET" Version="5.1.5.4" />
+    <PackageReference Include="Scintilla.NET" Version="5.3.1" />
   </ItemGroup>
 </Project>
