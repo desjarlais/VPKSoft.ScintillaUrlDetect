@@ -14,10 +14,13 @@ The package ending with .NET is depended upon the new Scintilla 5 series [Scinti
 * [PropertyChanged.Fody](https://github.com/Fody/PropertyChanged)
 * [@Sigmanor](https://github.com/Sigmanor) for suggesting to only update the visible area of the [ScintillaNET](https://github.com/jacobslusser/ScintillaNET) control and other precise observations.
 * [RegEx101](https://regex101.com)
+* [JetBrains](https://www.jetbrains.com/?from=VPKSoft.ScintillaUrlDetect)
+    
+    [![image](https://user-images.githubusercontent.com/40712699/196234622-e33fa94d-487b-4856-b453-24407cd1a76d.png)](https://www.jetbrains.com/?from=VPKSoft.ScintillaUrlDetect)
 
 ### ScreenShot of the TestApp
 ![image](https://user-images.githubusercontent.com/40712699/68073080-749e5a00-fd95-11e9-8982-398230fbe0ca.png)
 
 This library was inspired by question posted to [ScintillaNET repository](https://github.com/jacobslusser/ScintillaNET/issues/470) - thank you for asking 👍
 
-[![JetBrains](http://www.vpksoft.net/site/External/JetBrains/jetbrains.svg)](https://www.jetbrains.com/?from=VPKSoft.ScintillaUrlDetect)
+
