@@ -3,9 +3,9 @@
 		<TargetFrameworks>netcoreapp3.1;net471;net5.0-windows;net6.0-windows</TargetFrameworks>
 		<AssemblyTitle>VPKSoft.ScintillaUrlDetect.NET</AssemblyTitle>
 		<Product>VPKSoft.ScintillaUrlDetect.NET</Product>
-		<Copyright>Copyright © VPKSoft 2021</Copyright>
+		<Copyright>Copyright © VPKSoft 2022</Copyright>
 		<OutputPath>bin\$(Configuration)\</OutputPath>
-		<Version>1.0.11</Version>
+		<Version>1.0.13</Version>
 		<Authors>VPKSoft</Authors>
 		<Description>A library to detect URLs with the Scintilla.NET control.</Description>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -48,6 +48,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="PropertyChanged.Fody" Version="4.0.5" />
-		<PackageReference Include="Scintilla.NET" Version="5.3.1.1" />
+		<PackageReference Include="Scintilla.NET" Version="5.3.1.2" />
 	</ItemGroup>
 </Project>
