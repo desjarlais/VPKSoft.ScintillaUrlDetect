@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net6.0-windows</TargetFramework>
+		<TargetFramework>net7.0-windows</TargetFramework>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<AssemblyTitle>TestApp</AssemblyTitle>
 		<Company>VPKSoft</Company>
 		<Product>TestApp</Product>
 		<Description>A test application for the library to detect URLs with the ScintillaNET control.</Description>
-		<Copyright>Copyright © VPKSoft 2020</Copyright>
+		<Copyright>Copyright © VPKSoft 2022</Copyright>
 		<OutputPath>bin\$(Configuration)\</OutputPath>
 		<UseWindowsForms>true</UseWindowsForms>
 	</PropertyGroup>

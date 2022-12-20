@@ -2,7 +2,7 @@
 /*
 MIT License
 
-Copyright(c) 2020 Petteri Kautonen
+Copyright(c) 2022 Petteri Kautonen
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,6 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
-using PropertyChanged;
 using ScintillaNET;
 
 // Thanks to: https://github.com/jacobslusser/ScintillaNET/issues/111
@@ -473,7 +472,6 @@ namespace VPKSoft.ScintillaUrlDetect
         /// <summary>
         /// Gets or sets a value indicating whether the URL styling is required for the <see cref="Scintilla"/> control via contents change.
         /// </summary>
-        [DoNotNotify] // this property notifies by it self..
         private bool NeedsUrlStylingContent
         {
             get
@@ -500,6 +498,7 @@ namespace VPKSoft.ScintillaUrlDetect
         /// Gets or sets the value whether to use to whole document styling with the <see cref="Scintilla"/> control.
         /// This is very slow on large text documents.
         /// </summary>
+        // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public static bool StyleEntireDocument { get; set; }
 
         // a field to hold the NeedUrlStylingUIUpdate property value..
@@ -508,7 +507,6 @@ namespace VPKSoft.ScintillaUrlDetect
         /// <summary>
         /// Gets or sets a value indicating whether the URL styling is required for the <see cref="Scintilla"/> control via the visible area change.
         /// </summary>
-        [DoNotNotify] // this property notifies by it self..
         private bool NeedUrlStylingUiUpdate
         {
             get
@@ -537,7 +535,6 @@ namespace VPKSoft.ScintillaUrlDetect
         /// <summary>
         /// Gets or sets the URL check interval for the <see cref="Scintilla"/> control when the contents change.
         /// </summary>
-        [DoNotNotify]
         public int UrlCheckIntervalContentsChange
         {
             get
@@ -563,7 +560,6 @@ namespace VPKSoft.ScintillaUrlDetect
         /// <summary>
         /// Gets or sets the URL check interval for the <see cref="Scintilla"/> control.
         /// </summary>
-        [DoNotNotify]
         public int UrlCheckInterval
         {
             get => UrlCheckIntervalContentsChange;
@@ -572,11 +568,20 @@ namespace VPKSoft.ScintillaUrlDetect
 
         // a field to hold the UrlCheckIntervalUiUpdate property value..
         private int urlCheckIntervalUiUpdate = 285;
+        private int scintillaUrlIndicatorIndex = 29;
+        private Color scintillaUrlIndicatorColor = Color.Blue;
+        private IndicatorStyle scintillaUrlIndicatorStyle = IndicatorStyle.Plain;
+        private int scintillaUrlTextIndicatorIndex = 30;
+        private Color scintillaUrlTextIndicatorColor = Color.Blue;
+        private IndicatorStyle scintillaUrlTextIndicatorStyle = IndicatorStyle.TextFore;
+        private float dwellToolTipFontSize = 8.25f;
+        private Color dwellToolTipForegroundColor = SystemColors.InfoText;
+        private Color dwellToolTipBackgroundColor = SystemColors.Info;
+        private bool useDwellToolTip = true;
 
         /// <summary>
         /// Gets or sets the URL check interval for the <see cref="Scintilla"/> control.
         /// </summary>
-        [DoNotNotify]
         public int UrlCheckIntervalUiUpdate
         {
             get
@@ -622,17 +627,52 @@ namespace VPKSoft.ScintillaUrlDetect
         /// <summary>
         /// Gets or sets the index of the scintilla URL indicator.
         /// </summary>
-        public int ScintillaUrlIndicatorIndex { get; set; } = 29;
+        public int ScintillaUrlIndicatorIndex
+        {
+            get => scintillaUrlIndicatorIndex;
+            set
+            {
+                if (value != scintillaUrlIndicatorIndex)
+                {
+                    OnPropertyChanged(nameof(ScintillaUrlIndicatorIndex), scintillaUrlIndicatorIndex, value);
+                }
+                scintillaUrlIndicatorIndex = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the color of the scintilla URL indicator.
         /// </summary>
-        public Color ScintillaUrlIndicatorColor { get; set; } = Color.Blue;
+        public Color ScintillaUrlIndicatorColor
+        {
+            get => scintillaUrlIndicatorColor;
+            set
+            {
+                if (value != scintillaUrlIndicatorColor)
+                {
+                    OnPropertyChanged(nameof(ScintillaUrlIndicatorColor), scintillaUrlIndicatorColor, value);
+                }
+
+                scintillaUrlIndicatorColor = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the scintilla URL indicator style.
         /// </summary>
-        public IndicatorStyle ScintillaUrlIndicatorStyle { get; set; } = IndicatorStyle.Plain;
+        public IndicatorStyle ScintillaUrlIndicatorStyle
+        {
+            get => scintillaUrlIndicatorStyle;
+            set
+            {
+                if (value != scintillaUrlIndicatorStyle)
+                {
+                    OnPropertyChanged(nameof(ScintillaUrlIndicatorStyle), scintillaUrlIndicatorStyle, value);
+                }
+
+                scintillaUrlIndicatorStyle = value;
+            }
+        }
 
         /// <summary>
         /// Gets the scintilla URL indicator.
@@ -646,20 +686,57 @@ namespace VPKSoft.ScintillaUrlDetect
         #endregion
 
         #region ScintillaUrlTextIndicator
+
         /// <summary>
         /// Gets or sets the index of the scintilla URL text indicator.
         /// </summary>
-        public int ScintillaUrlTextIndicatorIndex { get; set; } = 30;
+        public int ScintillaUrlTextIndicatorIndex
+        {
+            get => scintillaUrlTextIndicatorIndex;
+            set
+            {
+                if (value != scintillaUrlTextIndicatorIndex)
+                {
+                    OnPropertyChanged(nameof(ScintillaUrlTextIndicatorIndex), scintillaUrlTextIndicatorIndex, value);
+                }
+
+                scintillaUrlTextIndicatorIndex = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the color of the scintilla URL text indicator.
         /// </summary>
-        public Color ScintillaUrlTextIndicatorColor { get; set; } = Color.Blue;
+        public Color ScintillaUrlTextIndicatorColor
+        {
+            get => scintillaUrlTextIndicatorColor;
+            set
+            {
+                if (value != scintillaUrlTextIndicatorColor)
+                {
+                    OnPropertyChanged(nameof(ScintillaUrlTextIndicatorColor), scintillaUrlTextIndicatorColor, value);
+                }
+
+                scintillaUrlTextIndicatorColor = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the scintilla URL text indicator style.
         /// </summary>
-        public IndicatorStyle ScintillaUrlTextIndicatorStyle { get; set; } = IndicatorStyle.TextFore;
+        public IndicatorStyle ScintillaUrlTextIndicatorStyle
+        {
+            get => scintillaUrlTextIndicatorStyle;
+            set
+            {
+                if (value != scintillaUrlTextIndicatorStyle)
+                {
+                    OnPropertyChanged(nameof(ScintillaUrlTextIndicatorStyle), scintillaUrlTextIndicatorStyle, value);
+                }
+
+                scintillaUrlTextIndicatorStyle = value;
+            }
+        }
 
         /// <summary>
         /// Gets the scintilla URL text indicator.
@@ -702,22 +779,72 @@ namespace VPKSoft.ScintillaUrlDetect
         /// <summary>
         /// Gets or sets the size of the dwell tool tip font.
         /// </summary>
-        public float DwellToolTipFontSize { get; set; } = 8.25f;
+        public float DwellToolTipFontSize
+        {
+            get => dwellToolTipFontSize;
+            set
+            {
+                // ReSharper disable once CompareOfFloatsByEqualityOperator, A property.
+                if (value != dwellToolTipFontSize)
+                {
+                    OnPropertyChanged(nameof(DwellToolTipFontSize), dwellToolTipFontSize, value);
+                }
+
+                dwellToolTipFontSize = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the color of the dwell tool tip foreground.
         /// </summary>
-        public Color DwellToolTipForegroundColor { get; set; } = SystemColors.InfoText;
+        public Color DwellToolTipForegroundColor
+        {
+            get => dwellToolTipForegroundColor;
+            set
+            {
+                if (value != dwellToolTipForegroundColor)
+                {
+                    OnPropertyChanged(nameof(DwellToolTipForegroundColor), dwellToolTipForegroundColor, value);
+                }
+
+                dwellToolTipForegroundColor = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the color of the dwell tool tip background.
         /// </summary>
-        public Color DwellToolTipBackgroundColor { get; set; } = SystemColors.Info;
+        public Color DwellToolTipBackgroundColor
+        {
+            get => dwellToolTipBackgroundColor;
+            set
+            {
+                if (value != dwellToolTipBackgroundColor)
+                {
+                    OnPropertyChanged(nameof(DwellToolTipBackgroundColor), dwellToolTipBackgroundColor, value);
+                }
+
+                dwellToolTipBackgroundColor = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether to use a dwell tool tip on the URLs.
         /// </summary>
-        public bool UseDwellToolTip { get; set; } = true;
+        public bool UseDwellToolTip
+        {
+            get => useDwellToolTip;
+            set
+            {
+                if (value != useDwellToolTip)
+                {
+                    OnPropertyChanged(nameof(UseDwellToolTip), useDwellToolTip, value);
+                }
+
+                useDwellToolTip = value;
+            }
+        }
+
         #endregion
 
         #region ScintillaIndicator
@@ -764,7 +891,7 @@ namespace VPKSoft.ScintillaUrlDetect
         /// <summary>
         /// A list of <see cref="Scintilla"/> indicators to clear from the range of the URL styling.
         /// </summary>
-        private static readonly List<int> StyleClearList = new List<int>();
+        private static List<int> StyleClearList { get; } = new List<int>();
 
         /// <summary>
         /// Gets the <see cref="Scintilla"/> control visible text area start position and its contents as a named tuple.
