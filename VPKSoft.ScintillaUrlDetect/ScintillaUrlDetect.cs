@@ -686,7 +686,6 @@ namespace VPKSoft.ScintillaUrlDetect
         #endregion
 
         #region ScintillaUrlTextIndicator
-
         /// <summary>
         /// Gets or sets the index of the scintilla URL text indicator.
         /// </summary>
