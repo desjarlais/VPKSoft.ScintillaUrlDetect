@@ -16,7 +16,10 @@ The package ending with .NET is depended upon the new Scintilla 5 series [Scinti
 * [RegEx101](https://regex101.com)
 * [JetBrains](https://www.jetbrains.com/?from=VPKSoft.ScintillaUrlDetect)
     
-    [![image](https://user-images.githubusercontent.com/40712699/196234622-e33fa94d-487b-4856-b453-24407cd1a76d.png)](https://www.jetbrains.com/?from=VPKSoft.ScintillaUrlDetect)
+    
+    
+
+    [![image](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)](https://www.jetbrains.com/?from=VPKSoft.ScintillaUrlDetect)
 
 ### ScreenShot of the TestApp
 ![image](https://user-images.githubusercontent.com/40712699/68073080-749e5a00-fd95-11e9-8982-398230fbe0ca.png)
