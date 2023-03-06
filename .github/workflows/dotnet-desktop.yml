@@ -19,11 +19,9 @@ jobs:
 
     env:
       Solution_Name: VPKSoft.ScintillaUrlDetect.sln
-      App_Project_Directory_1: VPKSoft.ScintillaUrlDetect
-      App_Project_Path_1: VPKSoft.ScintillaUrlDetect\VPKSoft.ScintillaUrlDetect.csproj
 
-      App_Project_Directory_2: VPKSoft.ScintillaUrlDetect.NET
-      App_Project_Path_2: VPKSoft.ScintillaUrlDetect.NET\VPKSoft.ScintillaUrlDetect.NET.csproj
+      App_Project_Directory: VPKSoft.ScintillaUrlDetect.NET
+      App_Project_Path: VPKSoft.ScintillaUrlDetect.NET\VPKSoft.ScintillaUrlDetect.NET.csproj
 
       NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
       NUGETAPI: ${{ secrets.NUGETAPI }}      
@@ -53,14 +51,9 @@ jobs:
       env:
         Configuration: ${{ matrix.configuration }}
 
-    # Create the VVPKSoft.ScintillaUrlDetect app package by building and packaging the NuGet
-    - name: Create the VPKSoft.ScintillaUrlDetect NuGet package
-      run: msbuild $env:App_Project_Path_1 /p:Configuration=$env:Configuration
-
-
     # Create the VPKSoft.ScintillaUrlDetect.NET app package by building and packaging the NuGet
     - name: Create the VPKSoft.ScintillaUrlDetect.NET NuGet package
-      run: msbuild $env:App_Project_Path_2 /p:Configuration=$env:Configuration
+      run: msbuild $env:App_Project_Path /p:Configuration=$env:Configuration
 
     - name: Decode nuget.config
       if: ${{ github.event_name != 'pull_request' }}
