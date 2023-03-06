@@ -31,16 +31,11 @@
 		<Reference Include="Microsoft.CSharp" />
 	</ItemGroup>
 	<ItemGroup>
-		<Compile Include="..\VPKSoft.ScintillaUrlDetect\ErrorHandlingBase.cs" Link="ErrorHandlingBase.cs" />
-		<Compile Include="..\VPKSoft.ScintillaUrlDetect\ScintillaIndicatorHelper.cs" Link="ScintillaIndicatorHelper.cs" />
-		<Compile Include="..\VPKSoft.ScintillaUrlDetect\ScintillaUrlDetect.cs" Link="ScintillaUrlDetect.cs" />
-		<Compile Include="..\VPKSoft.ScintillaUrlDetect\UrlMatch.cs" Link="UrlMatch.cs" />
+	  <Compile Remove="Properties\**" />
+	  <EmbeddedResource Remove="Properties\**" />
+	  <None Remove="Properties\**" />
 	</ItemGroup>
 	<ItemGroup>
-		<None Include="..\VPKSoft.ScintillaUrlDetect\FodyWeavers.xsd">
-			<Link>FodyWeavers.xsd</Link>
-			<SubType>Designer</SubType>
-		</None>
 		<None Include="..\vpksoft_logo.png">
 			<Pack>True</Pack>
 			<PackagePath></PackagePath>
